@@ -19,30 +19,42 @@ namespace Simulation
 
             public override string ToString() => $"({U}, {V})";
         }
-
+        [CLIParameter("N")]
         public int NodeCount = 100;
+        [CLIParameter("P")]
         public int CouplingRadius = 1;
 
+        [CLIParameter("sigma")]
         public double CouplingStrength = 0.1;
+        [CLIParameter("epsilon")]
         public double TimeScale = 0.01;
+        [CLIParameter("D")]
         public double DiffusionConstant = 0.5;
 
+        [CLIParameter("dt")]
         public double DeltaTime = 0.001;
 
+        [CLIParameter("t0")]
         public double WarmupTime = 2000.0;
         int WarmupCount;
+        [CLIParameter("dtm")]
         public double MeasureInterval = 0.1;
         int IntervalSize;
+        [CLIParameter("t1")]
         public double MaximumTime = 2060.0;
         int Measurements;
 
+        [CLIParameter("tau")]
         public double DelayTime = 0.0;
         int DelaySteps;
 
+        [CLIParameter("s")]
         public int Seed = (int)DateTime.Now.Ticks;
         Random[] RNG;
 
+        [CLIParameter("a0")]
         public double BifurcationParameterMean = 1.05;
+        [CLIParameter("da")]
         public double BifurcationParameterVariance = 0;
         double[] bifurcationParameter;
 
@@ -52,6 +64,12 @@ namespace Simulation
         Node[] SwapBuffer;
         Node[][] DelayBuffer;
         Node[][] Data;
+
+        bool hasRun = false;
+        bool createdOutput = false;
+        Guid guid = Guid.NewGuid();
+
+        public string OutputDirectory => createdOutput ? guid.ToString() : null;
 
         int Cores;
 
@@ -122,6 +140,8 @@ namespace Simulation
 
                 Array.Copy(DelayBuffer[DelaySteps], Data[i], NodeCount);
             }
+
+            hasRun = true;
         }
 
         void Step()
@@ -155,18 +175,43 @@ namespace Simulation
             Copy2DArray(ref Data, ref data);
         }
 
-        public Guid SaveTrajectory()
+        string MakeDirectory()
         {
-            Setup();
-            Run();
-
-            var guid = Guid.NewGuid();
             var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", guid.ToString());
             Directory.CreateDirectory(dir);
+
+            createdOutput = true;
+
+            return dir;
+        }
+
+        void EnsureRun()
+        {
+            if (!hasRun)
+            {
+                Setup();
+                Run();
+            }
+        }
+
+        [CLIAction("cfg")]
+        public void Config()
+        {
+            EnsureRun();
+
+            var dir = MakeDirectory();
 
             var xml = new XmlSerializer(typeof(Simulator));
             using (var config = File.Create(Path.Combine(dir, "Config.xml")))
                 xml.Serialize(config, this);
+        }
+
+        [CLIAction("traj")]
+        public void Trajectory()
+        {
+            EnsureRun();
+
+            var dir = MakeDirectory();
 
             using (var data = File.Create(Path.Combine(dir, "Data.bin")))
             using (var writer = new BinaryWriter(data))
@@ -176,8 +221,6 @@ namespace Simulation
                         writer.Write(Data[i][j].U);
                         // writer.Write(Data[i][j].V);
                     }
-
-            return guid;
         }
     }
 }

@@ -8,11 +8,14 @@ namespace Simulation
 {
     class Program
     {
-        // TODO: set parameters via command line
         static void Main(string[] args)
         {
             var sim = new Simulator();
-            Console.Write(sim.SaveTrajectory().ToString());
+            var cli = new CLI(sim);
+
+            cli.Execute(args);
+
+            Console.Write(sim.OutputDirectory);
         }
     }
 }
