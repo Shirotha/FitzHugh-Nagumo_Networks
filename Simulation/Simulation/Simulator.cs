@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -58,6 +59,11 @@ namespace Simulation
         public double BifurcationParameterVariance = 0;
         double[] bifurcationParameter;
 
+        [CLIParameter("ulo")]
+        public double SpikeActivationThreshold = -0.5;
+        [CLIParameter("uhi")]
+        public double SpikePeakThreshold = 1.5;
+
         double CouplingConstant;
         double NoiseAmplitude;
 
@@ -84,6 +90,9 @@ namespace Simulation
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         double RandomNormal(int core) => Math.Cos(2.0 * Math.PI * RNG[core].NextDouble()) * Math.Sqrt(-2.0 * Math.Log(1.0 - RNG[core].NextDouble()));
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        double InverseLerp(double a, double b, double value) => (value - a) / (b - a);
+
         void Init2DArray(ref Node[][] nodes, int length)
         {
             nodes = new Node[length][];
@@ -95,6 +104,19 @@ namespace Simulation
         {
             for (int i = 0; i < Measurements; ++i)
                 Array.Copy(source[i], destination[i], NodeCount);
+        }
+
+        delegate void ArrayElementWriter<T>(BinaryWriter writer, ref T element);
+
+        void Write2DArray<T>(ref T[][] data, BinaryWriter writer, ArrayElementWriter<T> writeElement)
+        {
+            writer.Write(data.Length);
+            for (int i = 0; i < data.Length; ++i)
+            {
+                writer.Write(data[i].Length);
+                for (int j = 0; j < data[i].Length; ++j)
+                    writeElement(writer, ref data[i][j]);
+            }
         }
 
         void Setup()
@@ -213,14 +235,88 @@ namespace Simulation
 
             var dir = MakeDirectory();
 
-            using (var data = File.Create(Path.Combine(dir, "Data.bin")))
+            using (var data = File.Create(Path.Combine(dir, "Trajectory.bin")))
             using (var writer = new BinaryWriter(data))
-                for (int i = 0; i <= Measurements; ++i)
-                    for (int j = 0; j < NodeCount; ++j)
+                Write2DArray(ref Data, writer, delegate (BinaryWriter w, ref Node node)
+                {
+                    w.Write(node.U);
+                });
+        }
+
+        struct SpikeMeasure
+        {
+            public double ActivationTime;
+            public double NearPeakTime;
+            public double RelaxationTime;
+        }
+
+        [CLIAction("isi")]
+        public void InterspikeInterval()
+        {
+            // TODO: measure ISI while measuring instead
+            EnsureRun();
+
+            var spikes = new List<SpikeMeasure>[NodeCount];
+
+            Parallel.For(0, Cores, delegate (int core)
+            {
+                SpikeMeasure s;
+                for (int i = core; i < NodeCount; i += Cores)
+                {
+                    spikes[i] = new List<SpikeMeasure>();
+                    int j = 0;
+
+                    try
                     {
-                        writer.Write(Data[i][j].U);
-                        // writer.Write(Data[i][j].V);
+                        // skip first partial spike
+                        while (Data[j][i].U > SpikeActivationThreshold)
+                            ++j;
+
+                        while (true)
+                        {
+                            while (Data[j][i].U < SpikeActivationThreshold)
+                                ++j;
+                            s.ActivationTime = WarmupTime + MeasureInterval * (j - 1 + InverseLerp(Data[j - 1][i].U, Data[j][i].U, SpikeActivationThreshold));
+
+                            while (Data[j][i].U < SpikePeakThreshold)
+                                ++j;
+                            s.NearPeakTime = WarmupTime + MeasureInterval * (j - 1 + InverseLerp(Data[j - 1][i].U, Data[j][i].U, SpikePeakThreshold));
+
+                            while (Data[j][i].U > SpikeActivationThreshold)
+                                ++j;
+                            s.RelaxationTime = WarmupTime + MeasureInterval * (j - 1 + InverseLerp(Data[j - 1][i].U, Data[j][i].U, SpikeActivationThreshold));
+
+                            spikes[i].Add(s);
+                        }
                     }
+                    catch (IndexOutOfRangeException)
+                    {
+                        // reached end of data
+                    }
+                }
+            });
+
+            var isis = new double[NodeCount][];
+
+            for (int i = 0; i < NodeCount; ++i)
+            {
+                if (spikes[i].Count == 0)
+                    isis[i] = new double[0];
+                else
+                    isis[i] = new double[spikes[i].Count - 1];
+
+                for (int j = 1; j < spikes[i].Count; ++j)
+                    isis[i][j - 1] = spikes[i][j].ActivationTime /* .RelaxationTime */ - spikes[i][j - 1].ActivationTime;
+            }
+
+            var dir = MakeDirectory();
+
+            using (var data = File.Create(Path.Combine(dir, "ISI.bin")))
+            using (var writer = new BinaryWriter(data))
+                Write2DArray(ref isis, writer, delegate (BinaryWriter w, ref double isi)
+                {
+                    w.Write(isi);
+                });
         }
     }
 }
