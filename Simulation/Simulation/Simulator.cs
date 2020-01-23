@@ -80,7 +80,13 @@ namespace Simulation
 
         int Cores;
 
-        double EnsurePhase(double x) => x <= 1.0 ? 2.0 - x : x;
+        double EnsurePhaseSymmetric(double x)
+        {
+            double max = 2.0 * BifurcationParameterMean - 1.0;
+            while (x < 1.0 || x > max)
+                x = x <= 1.0 ? 2.0 - x : 2.0 * max - x;
+            return x;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         int Mod(int x) => x < 0 ? x + NodeCount : x >= NodeCount ? x - NodeCount : x;
@@ -139,7 +145,7 @@ namespace Simulation
 
             bifurcationParameter = new double[NodeCount];
             for (int i = 0; i < NodeCount; ++i)
-                bifurcationParameter[i] = EnsurePhase(BifurcationParameterMean + RandomNormal(i % Cores) * BifurcationParameterVariance);
+                bifurcationParameter[i] = EnsurePhaseSymmetric(BifurcationParameterMean + RandomNormal(i % Cores) * BifurcationParameterVariance);
 
             SqrtDeltaTime = Math.Sqrt(DeltaTime);
             CouplingConstant = CouplingStrength / (2.0 * CouplingRadius);
