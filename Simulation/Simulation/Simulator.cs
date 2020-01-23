@@ -30,19 +30,20 @@ namespace Simulation
         [CLIParameter("epsilon")]
         public double TimeScale = 0.01;
         [CLIParameter("D")]
-        public double DiffusionConstant = 0.5;
+        public double DiffusionConstant = 0.001;
 
         [CLIParameter("dt")]
         public double DeltaTime = 0.001;
+        double SqrtDeltaTime;
 
         [CLIParameter("t0")]
-        public double WarmupTime = 2000.0;
+        public double WarmupTime = 100.0;
         int WarmupCount;
         [CLIParameter("dtm")]
         public double MeasureInterval = 0.1;
         int IntervalSize;
         [CLIParameter("t1")]
-        public double MaximumTime = 2060.0;
+        public double MaximumTime = 200.0;
         int Measurements;
 
         [CLIParameter("tau")]
@@ -140,6 +141,7 @@ namespace Simulation
             for (int i = 0; i < NodeCount; ++i)
                 bifurcationParameter[i] = EnsurePhase(BifurcationParameterMean + RandomNormal(i % Cores) * BifurcationParameterVariance);
 
+            SqrtDeltaTime = Math.Sqrt(DeltaTime);
             CouplingConstant = CouplingStrength / (2.0 * CouplingRadius);
             NoiseAmplitude = Math.Sqrt(2.0 * DiffusionConstant);
 
@@ -180,7 +182,8 @@ namespace Simulation
                     SwapBuffer[i].U = DelayBuffer[DelaySteps][i].U + DeltaTime * (
                         DelayBuffer[DelaySteps][i].U - Cube(DelayBuffer[DelaySteps][i].U) / 3.0 - DelayBuffer[DelaySteps][i].V + coupling * CouplingConstant) / TimeScale;
                     SwapBuffer[i].V = DelayBuffer[DelaySteps][i].V + DeltaTime * (
-                        DelayBuffer[DelaySteps][i].U + bifurcationParameter[i] + RandomNormal(core) * NoiseAmplitude);
+                        DelayBuffer[DelaySteps][i].U + bifurcationParameter[i]) + 
+                        RandomNormal(core) * NoiseAmplitude * SqrtDeltaTime;
                 }
             });
 
