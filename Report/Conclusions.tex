@@ -1,0 +1,73 @@
+
+
+%\begin{figure}[!ht]
+%	\centering
+%	\subfloat[\label{sfig:DR_105}]{\includegraphics[width=0.5\textwidth]{a105RD}}
+%	\hfill
+%	\subfloat[\label{sfig:sR_105}]{\includegraphics[width=0.5\textwidth]{a13RD}}
+%	\caption{The Normalized standard deviation of the inter-spike-interval $R_T$ plotted over the diffusion parameter \textit{D}
+%for small and large bifurcation parameter a and for different heterogeneity \textit{$\delta a$}, For constant coupling strenght \textit{$\sigma=0.1$}
+%and constant timescale parameter $\epsilon$ = 0.01. Simulation for \textit{N} = 100 oscillators and constant simulation time
+%\textit{t} = 1000.}
+%	\label{fig:RD}
+%\end{figure}
+%
+%\begin{figure}[!ht]
+%	\centering
+%	\subfloat[\label{sfig:DR_13}]{\includegraphics[width=0.5\textwidth]{a105RS}}
+%	\hfill
+%	\subfloat[\label{sfig:sR_13}]{\includegraphics[width=0.5\textwidth]{a13RS}}
+%	\caption{The Normalized standard deviation of the inter-spike-interval $R_T$ plotted over the diffusion parameter \textit{D}
+%for small and large bifurcation parameter a and for different heterogeneity \textit{$\delta a$}, For constant coupling strenght \textit{$\sigma=0.1$}
+%and constant timescale parameter $\epsilon$ = 0.01. Simulation for \textit{N} = 100 oscillators and constant simulation time
+%\textit{t} = 1000.}
+%	\label{fig:RS}
+%\end{figure}
+
+
+
+
+
+
+
+
+\section{Summery and Conclusion}
+
+At first we showed the theoretical construct of the FitzHugh-Nagumo model for one oscillator. Further we also showed the theory for N ring networks. 
+Afterwards  we reproduced normalized standard deviation of
+the inter-spike-interval $R_T$. Therefor we looked at the effects by varying the bifurcation parameter \textit{a}, heterogeneity term \textit{$\delta a$}, the diffusion term \textit{D} and the coupling strength \textit{$\sigma$}.
+By simulating the normalized standard deviation of
+the inter-spike-interval $R_T$ in respect to the diffusion term \textit{D} and the coupling strength \textit{$\sigma$} for different bifurcation parameter \textit{a} we could determine what the optimal parameter are to achieve coherence resonance.\\
+First we had to compare our simulation without heterogeneous terms to the Fig. 2 of the paper by Masoliver et al \cite{Masoliver2017}, which was successful. Furthermore we had the task to integrate an inhomogeneous term. This is shown in \eq<ai>. In \fig<hetero-a-noise> and \fig<hetero-a-coupling> are the plots  for the varying parameters.\\
+In \sfig<hetero-a-noise,2> is shown that for higher bifurcation parameter \textit{a} the diffusion term has to increase to achieve coherence resonance. There is also the effect that with increasing \textit{a} the normalized standard deviation of
+the inter-spike-interval $R_T$ increases. Since this is the degree of how coherent the network is it worsens. \\
+With the inhomogeneity term for $a=1.05$ there is almost non shift. So the value of $R_T$ stays constant and the optimal noise intensity shifts a little towards smaller diffusion terms. Further away from the bifurcation point with expending \textit{$\delta a$} it shifts toward higher  \textit{D} and $R_T$.\\
+
+\Figure{min}{0.6}{image/plotMinDRs}{
+	Plotted optimal diffusion coefficient \textit{$D_{opt}$} in the $D$--$R_T$--space,
+	for small and large bifurcation parameter \textit{a} and for different heterogeneity \textit{$\delta a$}, constant coupling strenght \textit{$\sigma=0.1$}
+	and constant timescale parameter $\epsilon$ = 0.01. Simulation for \textit{N} = 100 oscillators and constant simulation time
+	\textit{t} = 1000.
+}
+
+%\begin{figure}
+%\centering
+%\includegraphics[scale=0.5]{min}
+%\caption{Plotted optimal diffusion coefficient \textit{$D_{opt}$} in the $D$--$R_T$--space,
+%for small and large bifurcation parameter \textit{a} and for different heterogeneity \textit{$\delta a$}, constant coupling strenght \textit{$\sigma=0.1$}
+%and constant timescale parameter $\epsilon$ = 0.01. Simulation for \textit{N} = 100 oscillators and constant simulation time
+%\textit{t} = 1000.}
+%\label{min}
+%\end{figure}
+
+We also plotted the optimal diffusion terms \textit{$D_{opt}$} for the varying bifurcation parameter (lines) with the varying inhomogeneous terms (dots) in \fig<min>. The dots represent the minima of the \fig<hetero-a-noise> and \fig<hetero-a-noise-extra> (appendix).
+Here is also to denote that the color of the dots is same as for each inhomogeneous and homogeneous data set. The lines represent to which bifurcation parameter the dots belong.
+So from \fig<min> is to obtain that the best bifurcation value is $a=1.05$ because the normalized standard deviation of
+the inter-spike-interval $R_T$ is the lowest. When the bifurcation parameter increases the $R_T$ value rises and the inhomogeneity spreads.\\
+
+Further we also simulated the normalized standard deviation of
+the inter-spike-interval $R_T$ over the coupling strength \textit{$\sigma$} see \fig<hetero-a-coupling>. Also here we obtained similar results. With higher bifurcation parameter \textit{a} the coupling strength \textit{$\sigma$} has to increase to achieve coherence resonance. Also the degree how coherent the system is gets worse. So also here it $a=1.05$ is optimal. With integrating inhomogeneous terms there will be lesser coupling strength needed as for \textit{$\delta a=0$}. For a bifurcation term $a=1.3$ it is the other way around.\\
+
+
+ 
+

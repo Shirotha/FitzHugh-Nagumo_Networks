@@ -1,0 +1,93 @@
+\section{Theory}
+\subsection{FitzHugh-Nagumo model}
+
+Richard FitzHugh \cite{FitzHugh1961} and J. Nagumo \cite{Nagumo1962} developed almost simultaneously a model to describe the excitation of a neuron mathematically. Starting from van der Pol oscillator
+
+\Equation{vdp}{
+	\frac{d^2x}{dt^2} - \mu (1-x^2) \frac{dx}{dt} + x = 0
+}
+
+%\begin{align}
+%    \frac{d^2x}{dt^2} - \mu (1-x^2) \frac{dx}{dt} + x = 0
+%\label{eqn:vdp}
+%\end{align}
+
+R. FitzHugh derived a more general form. To do so, he carried out a Lienard transform\cite{Lienard1928} of \eq<vdp> and added some constants to obtain two coupled differential equations describing an activator variable $u(t)$ and a recovery-like variable $v(t)$: 
+
+\Equation{fhnu}{
+	\epsilon \frac{du}{dt} = u - \frac{u^3}{3} - v
+}
+
+%\begin{align}
+%    \epsilon \frac{du}{dt} = u - \frac{u^3}{3} - v
+%\label{eqn:fhnu}
+%\end{align}
+
+\Equation{fhnv}{
+	\frac{dv}{dt} = u + a + \sqrt{2D} \xi (t)
+}
+
+%\begin{align}
+%    \frac{dv}{dt} = u + a + \sqrt{2D} \xi (t)
+%\label{eqn:fhnv}
+%\end{align}
+
+The excitation behavior in \eq<fhnu> evolves on a faster time scale than the inhibitor variable $v$ which is reached by $\epsilon < 1$. The constant $a$ denotes the bifurcation parameter for which $a > 1 $ describes the excitable regime. Since we are studying systems with background noise the last term in \eq<fhnv> is added to the recovery variable where $D$ denotes the noise intensity. $\xi (t)$ is chosen as Gaussian white noise with $\langle \xi (t) \rangle = 0$ and $\langle \xi (t + \tau) \xi (t) \rangle = \delta (\tau)$. 
+\newline
+\\
+The FitzHugh-Nagumo (FHN) model can now be applied to several coupled oscillators. \eq<fhnu> and \eq<fhnv> will be slightly modified by an additional coupling term in the activation differential equation (see \eq<fhnu>), where $N$ denotes the number of oscillators in system,
+
+\Equation{fhnui}{
+	\epsilon \frac{du_i}{dt} = u_i - \frac{u_i^3}{3} - v_i + \frac{\sigma}{2P} \sum_{j=i-P}^{i+P} (u_i(t) - u_{i-1}(t)) \ , \ i=1...N
+}
+
+%\begin{align}
+%    \epsilon \frac{du_i}{dt} = u_i - \frac{u_i^3}{3} - v_i + \frac{\sigma}{2P} \sum_{j=i-P}^{i+P} (u_i(t) - u_{i-1}(t)) \ , \ i=1...N
+%\end{align}
+
+to obtain an equation for a ring coupled network of FHN oscillators. The topology of the system is defined by the constant $P$ that declares the number of next neighbours coupled to each oscillator. The global coupling strength is denoted by $\sigma$.   
+
+\subsection{Coherence Resonance}
+
+Coherence Resonance describes the regularity of excitations over time in noise driven systems such as FitzHugh-Nagumo model \cite{Pikovsky1997}. The more regular the spikes occur the more equidistant is the inter-spike-intervall $t_{ISI}$ (see \fig<topology-CR>b). There are several different ways of describing how coherent a system is. In this project we focus on the normalized standard deviation of the inter-spike-interval $t_{ISI}$, so called $R_T$,
+
+\Equation{rt0}{
+	R_T = \frac{\sqrt{\langle t_{ISI}^2 \rangle - \langle t_{ISI} \rangle ^2}}{\langle t_{ISI} \rangle}	\nonumber
+}
+
+%\begin{align*}
+%    R_T = \frac{\sqrt{\langle t_{ISI}^2 \rangle - \langle t_{ISI} \rangle ^2}}{\langle t_{ISI} \rangle}
+%\end{align*}
+
+where $\langle ... \rangle$ denote the average over time $t$. This equation holds for single FitzHugh-Nagumo oscillators. In case of a network of $N \geq 2$ FHN oscillators the average over each node has to be taken into account 
+
+\Equation{rt}{
+	R = \frac{\sqrt{\langle \overline{t_{ISI}^2} \rangle - \langle \overline{t_{ISI}}  \rangle ^2}}{\langle \overline{t_{ISI}}  \rangle}
+}
+
+%\begin{align}
+%    R = \frac{\sqrt{\langle \overline{t_{ISI}^2} \rangle - \langle \overline{t_{ISI}}  \rangle ^2}}{\langle \overline{t_{ISI}}  \rangle}
+%\end{align}
+
+
+\section{Coherence Resonance in homogeneous networks}
+
+To encounter the effect of heterogeneity on the network we first focus on the homogeneous case  for a later reference. The simulations were carried out for next-neighbour coupling $P=1$ (see \sfig<topology-CR,1>) with fixed coupling strength. \fig<space-time> shows the activation variable $u(t)$ over time for each node in the network. For evaluating the optimal noise and coupling strength for coherence resonance we simulated the system once for fixed coupling strength and variable noise intensity and once for fixed noise intensity and variable coupling strength. Furthermore, both simulation types were done for two different bifurcation parameters (see \fig<CR-plots>). This reflects the non-monotonic behaviour as shown in \cite{Masoliver2017}. 
+
+\FigureRow{topology-CR}
+	{0.5}{image/ring_network_20}{Ring-Network topology for 20 next neighboured coupled FitzHugh-Nagumo oscillators.}
+	{0.5}{image/definition_CR}{From \cite{Pikovsky1997}: Spiking neurons over time. $t_{ISI}$ is defined here as $t_P$.}{
+	Visualization of the network topology (a) and time evolution of a single oscillator (b).
+}
+
+\newpage
+
+\Figure{space-time}{0.8}{image/space_time_homo}{
+	From \cite{Masoliver2017}: Space time diagram for different noise intensities (a) $D = 0.00012$, (b) $D = 0.001$, (c) $D = 0.005$, (d) $D = 0.05$ for $a = 1.05$, $\sigma = 0.1$, $\epsilon = 0.01$
+}
+
+As one can see in \fig<CR-plots> the minimum meaning the most coherent state is shifted to higher values of noise and coupling strength respectively. In addition to that, the shape of the function near the minimum is sharpened. 
+
+\Figure{CR-plots}{0.8}{image/CR_homo}{
+	From \cite{Masoliver2017}: Measure of coherence Resonance for different noise intensities (left) and coupling strength (right), both plotted logarithmic. The yellow triangles denote the results for $a = 1.3$ and blue circles denote $a = 1.05$
+}

@@ -188,7 +188,7 @@ namespace Simulation
                     SwapBuffer[i].U = DelayBuffer[DelaySteps][i].U + DeltaTime * (
                         DelayBuffer[DelaySteps][i].U - Cube(DelayBuffer[DelaySteps][i].U) / 3.0 - DelayBuffer[DelaySteps][i].V + coupling * CouplingConstant) / TimeScale;
                     SwapBuffer[i].V = DelayBuffer[DelaySteps][i].V + DeltaTime * (
-                        DelayBuffer[DelaySteps][i].U + bifurcationParameter[i]) + 
+                        DelayBuffer[DelaySteps][i].U + bifurcationParameter[i]) +
                         RandomNormal(core) * NoiseAmplitude * SqrtDeltaTime;
                 }
             });
@@ -252,6 +252,21 @@ namespace Simulation
                 });
         }
 
+        [CLIAction("trajV")]
+        public void TrajectoryV()
+        {
+            EnsureRun();
+
+            var dir = MakeDirectory();
+
+            using (var data = File.Create(Path.Combine(dir, "TrajectoryV.bin")))
+            using (var writer = new BinaryWriter(data))
+                Write2DArray(ref Data, writer, delegate (BinaryWriter w, ref Node node)
+                {
+                    w.Write(node.V);
+                });
+        }
+
         struct SpikeMeasure
         {
             public double ActivationTime;
@@ -262,7 +277,6 @@ namespace Simulation
         [CLIAction("isi")]
         public void InterspikeInterval()
         {
-            // TODO: measure ISI while measuring instead
             EnsureRun();
 
             var spikes = new List<SpikeMeasure>[NodeCount];
@@ -326,6 +340,22 @@ namespace Simulation
                 {
                     w.Write(isi);
                 });
+        }
+
+        [CLIAction("as")]
+        public void BifurcationParameters()
+        {
+            EnsureRun();
+
+            var dir = MakeDirectory();
+
+            using (var data = File.Create(Path.Combine(dir, "BifurcationParameters.bin")))
+            using (var writer = new BinaryWriter(data))
+            {
+                writer.Write(NodeCount);
+                for (int i = 0; i < NodeCount; ++i)
+                    writer.Write(bifurcationParameter[i]);
+            }
         }
     }
 }

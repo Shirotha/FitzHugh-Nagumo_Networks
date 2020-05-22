@@ -1,0 +1,156 @@
+\documentclass[aps,pra,%twocolumn,
+					%preprint,
+					showpacs,superscriptaddress,nofootinbib]{revtex4-1}
+
+
+%\bibliographystyle{apsrev}
+\usepackage{helvet}
+\usepackage{eurosym}
+\usepackage{color}
+\usepackage[utf8]{inputenc}
+%\usepackage{subfigure}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage{xcolor}
+
+\usepackage{natbib}
+\usepackage{url}
+\usepackage{textcase}
+\usepackage{bm}
+
+\usepackage{placeins}
+
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{calrsfs}
+\usepackage{braket}
+\usepackage[hidelinks]{hyperref}
+\usepackage{subfig}
+
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
+\DeclareGraphicsExtensions{%
+ .png,%
+ .jpg,%
+ .pdf,.PDF,%
+ .mps,.jpeg,.jbig2,.jb2,.JPG,.JPEG,.JBIG2,.JB2}
+
+%some definitions
+
+\makeatletter
+
+
+\newcommand{\abs}[1]{\left| #1 \right|} % for absolute value
+\newcommand{\avg}[1]{\left< #1 \right>} % for average
+\def\d{\mathrm d}
+\renewcommand{\dfrac}[2]{\frac{\d #1}{\d #2}} % for derivatives
+\newcommand{\ddfrac}[2]{\frac{\d^2 #1}{\d #2^2}} % for double derivatives
+\newcommand{\pdfrac}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\pddfrac}[2]{\frac{\partial^2 #1}{\partial {#2}^2}}
+\newcommand{\pdddfrac}[2]{\frac{\partial^2 #1}{\partial {#2}^2}}
+%\newcommand{\ket}[1]{\left| #1 \right>} % for Dirac bras
+%\newcommand{\bra}[1]{\left< #1 \right|} % for Dirac kets
+%\newcommand{\braket}[2]{\left< #1 \vphantom{#2} \right|
+% \left. #2 \vphantom{#1} \right>} % for Dirac brackets
+%\newcommand{\ketbra}[2]{\left| #1 \vphantom{#2} \right>
+% \left< #2 \vphantom{#1} \right|} % for Dirac brackets
+\newcommand{\braces}[1]{\left( #1 \right)}
+\newcommand{\brackets}[1]{\left[ #1 \right]}
+\newcommand{\curlys}[1]{\left\{ #1 \right\}}
+\newcommand{\Braces}[1]{\Big( #1 \Big)}
+\newcommand{\Brackets}[1]{\Big[ #1 \Big]}
+\newcommand{\Curlys}[1]{\Big\{ #1 \Big\}}
+\newcommand{\commut}[1]{\left[ #1 \right]}
+\newcommand{\super}[1]{{\pazocal{#1}}}
+\newcommand{\Tr}[1]{\text{Tr}}
+\newcommand{\Exp}[1]{\text{e}^{#1}}
+
+\newcommand{\add}[1]{\textcolor{blue}{#1}} % add new text
+\newcommand{\rep}[2]{\textcolor{red}{#1}\ \textcolor{blue}{#2}} % replace with new text
+\newcommand{\rem}[1]{\textcolor{red}{#1}} % remove text
+\newcommand{\Avg}[1]{\langle{#1}\rangle} % for average
+
+\def\ii{i}
+\def\to{\rightarrow}
+
+% args: width, file
+\newcommand{\Image}[2]{\includegraphics[width=#1\textwidth]{#2}}
+
+% args: label, width, file, caption
+\newcommand{\Figure}[4]{\begin{figure}[!ht]
+	\centering
+	\Image{#2}{#3}
+	\caption{#4}
+	\label{fig:#1}
+\end{figure}}
+
+% args: label, width1, file1, caption1, width2, file2, caption2, caption
+\newcommand{\FigureRow}[8]{\begin{figure}[!ht]
+	\centering
+	\subfloat[#4\label{sfig:#1-1}]{\Image{#2}{#3}}
+	\hfill
+	\subfloat[#7\label{sfig:#1-2}]{\Image{#5}{#6}}
+	\caption{#8}
+	\label{fig:#1}
+\end{figure}}
+
+\newcommand{\FigureGrid@Cont}[7]{\begin{figure}[!ht]
+	\centering
+	\subfloat[\arg@captionA\label{sfig:\arg@label-1}]{\Image{\arg@widthA}{\arg@fileA}}
+	\hfill
+	\subfloat[\arg@captionB\label{sfig:\arg@label-2}]{\Image{\arg@widthB}{\arg@fileB}} \\
+	\subfloat[#3\label{sfig:\arg@label-3}]{\Image{#1}{#2}}
+	\hfill
+	\subfloat[#6\label{sfig:\arg@label-4}]{\Image{#4}{#5}} 
+	\caption{#7}
+	\label{fig:\arg@label}
+\end{figure}}
+
+\newcommand{\FigureGrid}[7]{%
+	\def\arg@label{#1}
+	\def\arg@widthA{#2}
+	\def\arg@fileA{#3}
+	\def\arg@captionA{#4}
+	\def\arg@widthB{#5}
+	\def\arg@fileB{#6}
+	\def\arg@captionB{#7}
+	\FigureGrid@Cont%
+}
+
+% args: label
+\def\fig<#1>{Fig. \ref{fig:#1}}
+
+% args: label, number
+\def\sfig<#1,#2>{Fig. \ref{sfig:#1-#2}}
+
+% args: label, equation
+\newcommand{\Equation}[2]{\begin{equation}
+	\label{eq:#1}
+	\begin{aligned}
+		#2
+	\end{aligned}
+\end{equation}}
+
+% args: label
+\def\eq<#1>{Eq. (\ref{eq:#1})}
+
+\def\SectionBreak{\FloatBarrier\newpage}
+
+\makeatother
+
+\begin{document}
+
+	\input{Frontmatter}
+	\SectionBreak
+	\input{Theory}
+	%\SectionBreak
+	%\input{Reproduction?}
+	\SectionBreak
+	\input{heterogenous-a}
+	\SectionBreak
+	\input{Conclusions}
+	\SectionBreak
+	\input{Appendix}
+	
+\end{document}
